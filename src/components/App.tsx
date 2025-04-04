@@ -86,6 +86,28 @@ function App() {
               >
                 Deselect All
               </button>
+              <button
+                className="btn"
+                onClick={() =>
+                  sendNotes({
+                    type: 'TOGGLE_LABEL_CONTAINING',
+                    element: '♯',
+                  })
+                }
+              >
+                Toggle ♯
+              </button>
+              <button
+                className="btn"
+                onClick={() =>
+                  sendNotes({
+                    type: 'TOGGLE_LABEL_CONTAINING',
+                    element: '♭',
+                  })
+                }
+              >
+                Toggle ♭
+              </button>
             </div>
           </div>
         </div>
