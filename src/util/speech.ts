@@ -20,7 +20,7 @@ function loadVoices(): Promise<SpeechSynthesisVoice[]> {
         }
       });
 
-      const filtered = voices.filter((voice) => voice.lang === "en-US");
+      const filtered = voices.filter((voice) => voice.lang === 'en-US');
 
       resolve(filtered);
       return;
@@ -30,7 +30,7 @@ function loadVoices(): Promise<SpeechSynthesisVoice[]> {
 
 function speak(voice: SpeechSynthesisVoice | null, text: string) {
   if (synth.speaking) {
-    console.error("speechSynthesis.speaking");
+    console.error('speechSynthesis.speaking');
     return;
   }
 

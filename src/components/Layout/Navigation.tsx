@@ -1,4 +1,4 @@
-import ThemeToggler from "../UI/ThemeToggler";
+import ThemeToggler from '../UI/ThemeToggler';
 
 export default function Navigation() {
   return (

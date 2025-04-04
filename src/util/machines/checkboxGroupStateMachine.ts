@@ -1,5 +1,5 @@
-import { assign, setup } from "xstate";
-import { CheckboxItem } from "../types";
+import { assign, setup } from 'xstate';
+import { CheckboxItem } from '../types';
 
 export const checkboxGroupStateMachine = setup({
   types: {
@@ -12,19 +12,19 @@ export const checkboxGroupStateMachine = setup({
     },
 
     events: {} as
-      | { type: "TOGGLE_ITEM"; label: string }
-      | { type: "SELECT_ALL" }
-      | { type: "DESELECT_ALL" },
+      | { type: 'TOGGLE_ITEM'; label: string }
+      | { type: 'SELECT_ALL' }
+      | { type: 'DESELECT_ALL' },
   },
 }).createMachine({
-  id: "checkbox",
-  systemId: "checkbox",
+  id: 'checkbox',
+  systemId: 'checkbox',
 
   context: ({ input }) => ({
     items: input.items,
   }),
 
-  initial: "idle",
+  initial: 'idle',
 
   states: {
     idle: {
