@@ -3,7 +3,7 @@ import { notesAll } from '../util/musicConst';
 import Checkbox from './UI/Checkbox';
 import { useMachine } from '@xstate/react';
 import { checkboxGroupStateMachine } from '../util/machines/checkboxGroupStateMachine';
-import { ttsStateMachine } from '../util/machines/stateMach';
+import { fretboardNotesStateMachine } from '../util/machines/fretboardNotesStateMachine';
 import Navigation from './Layout/Navigation';
 import Footer from './Layout/Footer';
 
@@ -26,7 +26,7 @@ function App() {
     },
   });
 
-  const [stateTts, sendTts] = useMachine(ttsStateMachine, {
+  const [stateTts, sendTts] = useMachine(fretboardNotesStateMachine, {
     input: {
       notes: stateNotes.context.items,
       strings: stateStrings.context.items,
@@ -144,29 +144,31 @@ function App() {
           </div>
         </div>
 
-        {/* TODO */}
-        {/* <fieldset className="fieldset">
-        <legend className="fieldset-legend">Select speaker</legend>
-        <select
-          id="select-voices"
-          className="select"
-          value={
-            stateTts.context.voices
-              ? stateTts.context.voices[stateTts.context.selectedVoiceIndex].name
-              : undefined
-          }
-          onChange={handleChange}
-        >
-          <option value="" disabled>
-            Stimme wählen...
-          </option>
-          {query.data?.map((voice) => (
-            <option key={voice.name} value={voice.name}>
-              {voice.name} ({voice.lang})
+        <fieldset className="fieldset">
+          <legend className="fieldset-legend">Select speaker</legend>
+          <select
+            id="select-voices"
+            className="select"
+            value={
+              stateTts.context.voices
+                ? stateTts.context.voices[stateTts.context.voiceIndex].name
+                : undefined
+            }
+            onChange={(e) =>
+              sendTts({ type: 'UPDATE_VOICE', voiceName: e.target.value })
+            }
+            disabled={stateTts.value !== 'ready'}
+          >
+            <option value="" disabled>
+              Stimme wählen...
             </option>
-          ))}
-        </select>
-      </fieldset> */}
+            {stateTts.context.voices?.map((voice) => (
+              <option key={voice.name} value={voice.name}>
+                {voice.name} ({voice.lang})
+              </option>
+            ))}
+          </select>
+        </fieldset>
 
         <div>
           <h2>

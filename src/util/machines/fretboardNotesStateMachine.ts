@@ -1,6 +1,6 @@
 import { assign, fromPromise, not, setup } from 'xstate';
 import { CheckboxItem } from '../types';
-import { loadVoices, speak } from '../speech';
+import { getVoices, speak } from '../tts';
 
 // Fisher-Yates Shuffle Algorithmus
 const shuffleArray = <T>(array: T[]): T[] => {
@@ -12,7 +12,7 @@ const shuffleArray = <T>(array: T[]): T[] => {
   return shuffled;
 };
 
-export const ttsStateMachine = setup({
+export const fretboardNotesStateMachine = setup({
   types: {
     context: {} as {
       notes: CheckboxItem[];
@@ -25,6 +25,7 @@ export const ttsStateMachine = setup({
         | undefined
       )[];
       voices?: SpeechSynthesisVoice[];
+      voiceIndex: number;
       waitingTimeInSeconds: number;
     },
 
@@ -40,7 +41,8 @@ export const ttsStateMachine = setup({
           type: 'UPDATE_NOTES_STRINGS';
           notes: CheckboxItem[];
           strings: CheckboxItem[];
-        },
+        }
+      | { type: 'UPDATE_VOICE'; voiceName: string },
   },
 
   delays: {
@@ -72,11 +74,7 @@ export const ttsStateMachine = setup({
   },
 
   actors: {
-    loadVoices: fromPromise(async () => {
-      const voices = await loadVoices();
-      console.log(voices);
-      return voices;
-    }),
+    getVoices: fromPromise(async () => getVoices()),
   },
 
   guards: {
@@ -89,14 +87,15 @@ export const ttsStateMachine = setup({
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QBdmwHQBsD2BDCAlgHZQDEE2RY6xAbtgNbU74Bq2BAxnANoAMAXUSgADtlgFkBSsJABPRAGYALMvQBWADQgAHksUB2DQCYAnMr7LFx44r4A2RYoC+z7agwAnMPjmkAygAqAIIASoH8QkggYhJSMtF6COoAjIro9nym9qbGABx56pnqptoKCMp5Kejmxo42hgZ8Ra7uaOjevqQAqgAKACLBgQCiAPoAcgDyI-6jQaEAkuMA4v6RsrGS0kSySSl8eegpxgbqzQaKOQZ5lmWIyvbqR5V59tem6nlWBq0gHuicXCYTgARQArnB4kRYKR1tFNlDdogDPY1OYXp88tkscY7gg3odrsZ1BZ7PZiRdfv9cLAGODIdsAoFJr04aJxFsEqAkpd7BpTGk6nwVHU3njPulzCllB8cuTUqYqe0aXSIbAoT0BkMxlMZnNAosVmtBBsOYjEoh9odjqdzpdTNdbvJEPL0KcBXxPXl8ikDMolRgVfT1YydOrcMhqLgAGaRzwACikAFswNgwcgAJSkam04NQtkxM3bJEIFSmdAFKoOoq+8z2PGvdJfZQGFKpdQqZr+tx-doAd1wkgAYthPMFoX2wJ5YSb4UWubpEKl0p9TJZvfYseS8g3UfyW04DLKGgH0APh6Px7BJ9OeCkouy4sWLQhrtUqilTGucsd1DY8dcTYpKiZYtgYNh5K4PZENgEBwLIHimk+C5JAAtHkRivMcxgOAYKKmJcBh4sSfJfl+eSKJ+ZKFCkp4sIQJBIZyOwvqhijllhNi4fhvL1s6paqBop6dBA5SPsxJaXIcOEOA6VqpAcyh4i2TxfGu1hpAc+y0T2-yAsCebbPAc7ISx3LInwRitsoq6FFk3qlPxNnGOgZZ8MB7nesclmnkGarmuJAWLqWlyuSRHwdoof6pHx5StocJQOg80rKNKnynueyAjmOE5TkxQU8io6D5GS1gCrkqS4vxHwuYoXxHnhf42c0UHOEAA */
-  id: 'tts',
-  systemId: 'tts',
+  id: 'fretboardNotes',
+  systemId: 'fretboarNotes',
 
   context: ({ input }) => ({
     notes: input.notes,
     strings: input.strings,
     questionsToAske: [],
     voices: undefined,
+    voiceIndex: 0,
     waitingTimeInSeconds: 10,
   }),
 
@@ -105,8 +104,8 @@ export const ttsStateMachine = setup({
   states: {
     loading: {
       invoke: {
-        id: 'loadVoices',
-        src: 'loadVoices',
+        id: 'getVoices',
+        src: 'getVoices',
         onDone: {
           target: 'ready',
           actions: assign({
@@ -120,10 +119,19 @@ export const ttsStateMachine = setup({
       on: {
         START: 'calcQuestions',
         UPDATE_NOTES_STRINGS: {
-          // TODO in setup auslagern
           actions: assign({
             notes: ({ event }) => event.notes,
             strings: ({ event }) => event.strings,
+          }),
+        },
+        UPDATE_VOICE: {
+          actions: assign({
+            voiceIndex: ({ context, event }) =>
+              context.voices
+                ? context.voices.findIndex(
+                    (voice) => voice.name === event.voiceName
+                  )
+                : 0,
           }),
         },
       },
@@ -144,7 +152,9 @@ export const ttsStateMachine = setup({
           );
           console.log(firstUnaskedQuestionIndex);
 
-          const voice = context.voices ? context.voices[0] : null;
+          const voice = context.voices
+            ? context.voices[context.voiceIndex]
+            : null;
           const question = context.questionsToAske[firstUnaskedQuestionIndex]
             ? context.questionsToAske[firstUnaskedQuestionIndex].question
             : '';
@@ -165,7 +175,6 @@ export const ttsStateMachine = setup({
       on: {
         STOP: 'ready',
         UPDATE_NOTES_STRINGS: {
-          // TODO in setup auslagern
           actions: assign({
             notes: ({ event }) => event.notes,
             strings: ({ event }) => event.strings,

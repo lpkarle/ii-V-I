@@ -1,22 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 function ThemeToggler() {
   const [theme, setTheme] = useState(() => {
-    const theme = localStorage.getItem("theme") || "light";
-    localStorage.setItem("theme", theme);
+    const theme = localStorage.getItem('theme') || 'light';
+    localStorage.setItem('theme', theme);
     return theme;
   });
 
   useEffect(() => {
-    console.log(localStorage.getItem("theme"));
-    console.log(theme);
-
-    localStorage.setItem("theme", theme);
-    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem('theme', theme);
+    document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -24,7 +21,7 @@ function ThemeToggler() {
       <input
         type="checkbox"
         className="theme-controller"
-        checked={theme === "dark"}
+        checked={theme === 'dark'}
         onChange={toggleTheme}
       />
 
