@@ -171,17 +171,6 @@ function App() {
         </fieldset>
 
         <div>
-          <h2>
-            <span>'SELECTED' VOICE: </span>
-            <span className="font-semibold">
-              {stateTts.context.voices
-                ? stateTts.context.voices[0].name +
-                  ' ' +
-                  stateTts.context.voices[0].lang
-                : ''}
-            </span>
-          </h2>
-
           <div>
             <button
               className={`btn mr-2 ${
