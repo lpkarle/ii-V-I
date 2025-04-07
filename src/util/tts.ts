@@ -3,6 +3,27 @@ console.log('TTS speechSynth', speechSynth);
 
 let voices: SpeechSynthesisVoice[] = [];
 
+const shittyVoices = [
+  'Albert',
+  'Bad News',
+  'Bahh',
+  'Bells',
+  'Boing',
+  'Bubbles',
+  'Cellos',
+  'Good News',
+  'Grandpa',
+  'Grandma',
+  'Organ',
+  'Ralph',
+  'Superstar',
+  'Trinoids',
+  'Whisper',
+  'Wobble',
+  'Zarvox',
+  'Shelley',
+];
+
 function getVoices(): Promise<SpeechSynthesisVoice[]> {
   return new Promise((resolve, reject) => {
     console.log('TTS getVoices() speechSynth', speechSynth);
@@ -30,7 +51,10 @@ function getVoices(): Promise<SpeechSynthesisVoice[]> {
 }
 
 function sortVoices(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice[] {
-  return voices.sort((a, b) => a.name.localeCompare(b.name));
+  return voices
+    .filter((voice) => voice.lang === 'en-US')
+    .filter((voice) => !shittyVoices.includes(voice.name))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 function speak(voice: SpeechSynthesisVoice | null, text: string) {
