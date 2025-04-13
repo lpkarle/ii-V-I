@@ -8,11 +8,6 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: '/ii-V-I/',
-  server: {
-    headers: {
-      'Permissions-Policy': 'interest-cohort=()',
-    },
-  },
   test: {
     globals: true,
     environment: 'jsdom',
