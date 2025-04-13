@@ -8,9 +8,7 @@ type RoutingContext = {
 export const RoutingContext = createContext<RoutingContext | null>(null);
 
 export const RoutingProvider = ({ children }: { children: ReactNode }) => {
-  const [page, setPage] = useState(
-    window.location.pathname.slice(1) || 'ii-V-I/home'
-  );
+  const [page, setPage] = useState('ii-V-I/fretboard-practice');
 
   useEffect(() => {
     const onPopState = () => {

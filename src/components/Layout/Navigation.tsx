@@ -1,17 +1,31 @@
+import { useRouting } from '../../hooks/useRouting';
 import ThemeToggler from '../UI/ThemeToggler';
 
 export default function Navigation() {
+  const { navigate } = useRouting();
+
   return (
     <div className="bg-base-100 shadow-sm">
       <div className="navbar content-lg">
         <div className="flex-1">
-          <a className="btn btn-ghost text-xl">ii V I</a>
+          <a
+            onClick={() => navigate('ii-V-I/fretboard')}
+            className="btn btn-ghost text-xl"
+          >
+            ii V I
+          </a>
 
-          <a href="fretboard" className="btn btn-ghost">
+          <a
+            onClick={() => navigate('ii-V-I/fretboard')}
+            className="btn btn-ghost"
+          >
             Fretboard
           </a>
 
-          <a href="fretboard-practice" className="btn btn-ghost">
+          <a
+            onClick={() => navigate('ii-V-I/fretboard-practice')}
+            className="btn btn-ghost"
+          >
             Fretboard-Practice
           </a>
         </div>
